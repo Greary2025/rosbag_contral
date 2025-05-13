@@ -1,0 +1,1 @@
+/usr/bin/c++  -O2  -O2 -pg -pg CMakeFiles/gprof_demo.dir/gprof_demo.cpp.o -o gprof_demo

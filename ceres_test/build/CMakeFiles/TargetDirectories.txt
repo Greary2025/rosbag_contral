@@ -1,0 +1,7 @@
+/home/john/ceres_test/build/CMakeFiles/nonlinear_optimization.dir
+/home/john/ceres_test/build/CMakeFiles/curve_fitting.dir
+/home/john/ceres_test/build/CMakeFiles/gprof_demo.dir
+/home/john/ceres_test/build/CMakeFiles/valgrind_demo.dir
+/home/john/ceres_test/build/CMakeFiles/performance_demo.dir
+/home/john/ceres_test/build/CMakeFiles/edit_cache.dir
+/home/john/ceres_test/build/CMakeFiles/rebuild_cache.dir
