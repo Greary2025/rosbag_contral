@@ -1,1 +1,0 @@
-/usr/bin/c++  -O2  -O2 -pg CMakeFiles/valgrind_demo.dir/valgrind_demo.cpp.o -o valgrind_demo
