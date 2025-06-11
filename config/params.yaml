@@ -1,0 +1,6 @@
+rosbag:
+  input_path: "lidar_1_pose_man_duan.bag"
+  output_path: "output.bag"
+lidar_params:
+  vertical_angles: [-15, 1, -13, 3, -11, 5, -9, 7, -7, 9, -5, 11, -3, 13, -1, 15]  # 示例为16线雷达
+  

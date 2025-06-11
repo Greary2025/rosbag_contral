@@ -1,0 +1,4 @@
+<launch>
+    <rosparam command="load" file="$(find your_package)/config/params.yaml" />
+    <node pkg="your_package" type="add_ring_node.py" name="add_ring_node" output="screen" />
+</launch>
