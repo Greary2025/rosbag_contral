@@ -1,4 +1,5 @@
 <launch>
-    <rosparam command="load" file="$(find your_package)/config/params.yaml" />
-    <node pkg="your_package" type="add_ring_node.py" name="add_ring_node" output="screen" />
+    <!-- <rosparam command="load" file="$(find your_package)/config/params.yaml" /> -->
+    <!-- <node pkg="rosbag_contral" type="add_ring_node.py" name="add_ring_node" output="screen" /> -->
+    <node pkg="rosbag_contral" type="gt_tum.py" name="gt_tum_node" output="screen" />
 </launch>
