@@ -4,9 +4,9 @@ from nav_msgs.msg import Odometry
 import os
 
 # 自定义路径字符串（可修改为你的实际路径）
-input_bag_path = "/mnt/c/Users/Greary/Documents/rosbag/lidar_1_true_intensity_06_25_4x.bag"  # 输入bag路径
-output_dir = "/mnt/c/Users/Greary/Documents/rosbag/Examdata/lidar_1_evo"                            # 输出目录
-output_txt_name = "true_06_25_4x.txt" 
+input_bag_path = "/mnt/c/Users/Greary/Documents/rosbag/lidar_1_0629.bag"  # 输入bag路径
+output_txt_name = "true_06_29.txt"                                        # 输出txt文件名
+output_dir = "/mnt/c/Users/Greary/Documents/rosbag/Examdata/lidar_1_evo/true"                            # 输出目录
 # 拼接完整输出路径（使用os.path.join保证跨平台兼容性）
 output_txt_path = os.path.join(output_dir, output_txt_name)
 # 确保输出目录存在（若不存在则创建）
@@ -54,13 +54,13 @@ def extract_pose_from_rosbag(bag_path, output_path):
                 
                 # 提取姿态信息（来自 pose.pose.orientation）
                 orientation = msg.pose.pose.orientation
-                ori_w = orientation.w
                 ori_x = orientation.x
                 ori_y = orientation.y
                 ori_z = orientation.z
+                ori_w = orientation.w
                 
                 # 按格式写入 TXT 文件（使用制表符分隔，兼容性更好）
-                line = f"{timestamp} {pos_x} {pos_y} {pos_z} {ori_w} {ori_x} {ori_y} {ori_z}\n"
+                line = f"{timestamp} {pos_x} {pos_y} {pos_z} {ori_x} {ori_y} {ori_z} {ori_w}\n"
                 f.write(line)
 
 if __name__ == "__main__":
