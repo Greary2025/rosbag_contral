@@ -3,8 +3,10 @@ import pandas as pd
 import json
 import numpy as np
 import plotly.graph_objects as go
+import plotly.offline as pyo
 from pathlib import Path
 import quaternion  # 需要安装 numpy-quaternion 包
+from datetime import datetime
 
 def load_poses_from_csv(file_path):
     """从CSV文件加载位姿数据"""
@@ -41,7 +43,7 @@ def create_arrow_points(position, rotation_matrix, scale=0.5):
     
     return position, end_point
 
-def visualize_poses(poses):
+def visualize_poses(poses, save_path=None):
     """创建交互式3D可视化"""
     # 创建图形
     fig = go.Figure()
@@ -90,18 +92,45 @@ def visualize_poses(poses):
         showlegend=True
     )
 
+    # 如果提供了保存路径，则保存为HTML文件
+    if save_path:
+        # 确保保存目录存在
+        save_path = Path(save_path)
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 保存为HTML文件，保留所有交互功能
+        pyo.plot(fig, filename=str(save_path), auto_open=False)
+        print(f"可视化图表已保存为HTML文件: {save_path}")
+        print(f"可以用浏览器打开查看，包含完整的3D交互功能")
+    
     # 显示图形
     fig.show()
 
 def main():
     # 设置文件路径
     # base_path = Path(__file__).parent.parent
-    base_path = Path('/mnt/d/rosbag/hba/0722_xianfeng')
+    base_path = Path('/mnt/d/rosbag/shiyan/0928_xianfeng')
     # csv_path = base_path / 'config' / 'poses_lidar2body.csv'
     # csv_path = base_path / 'poses_lidar2body.csv'
     csv_path = base_path / 'poses_lidar2body_origin.csv'
     # json_path = base_path / 'config' / 'pose.json'
     json_path = base_path / 'pose.json'
+    # json_path = base_path / 'pose_origin.json'
+
+    # 设置HTML保存路径
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    html_filename = f"pose_visualization_{timestamp}.html"
+    
+    # 优先保存到数据目录，如果不可写则保存到当前脚本目录
+    try:
+        html_save_path = base_path / html_filename
+        # 测试是否可写
+        html_save_path.parent.mkdir(parents=True, exist_ok=True)
+    except (PermissionError, OSError):
+        # 如果数据目录不可写，保存到脚本目录
+        script_dir = Path(__file__).parent
+        html_save_path = script_dir / html_filename
+        print(f"数据目录不可写，将保存到脚本目录: {html_save_path}")
 
     # 尝试加载数据
     poses = None
@@ -118,8 +147,8 @@ def main():
         print(f"  - {json_path}")
         return
 
-    # 可视化位姿
-    visualize_poses(poses)
+    # 可视化位姿并保存为HTML文件
+    visualize_poses(poses, save_path=html_save_path)
 
 if __name__ == '__main__':
     main()

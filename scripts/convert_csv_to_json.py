@@ -52,9 +52,9 @@ def main():
     """
     # 配置文件路径
     # input_csv_path = "/mnt/d/rosbag/hba/synchronous/poses_lidar2body.csv"  # 输入CSV文件路径
-    input_csv_path = "/mnt/d/rosbag/hba/synchronous/poses_lidar2body_origin.csv"  # 输入CSV文件路径
-    output_json_path = "/mnt/d/rosbag/hba/synchronous/pose.json"  # 输出JSON格式文件路径
-    
+    input_csv_path = "/mnt/d/rosbag/big_exam/synchronous_1014_gensui/poses_lidar2body_origin.csv"  # 输入CSV文件路径
+    output_json_path = "/mnt/d/rosbag/big_exam/synchronous_1014_gensui/pose_origin.json"  # 输出JSON格式文件路径
+
     print("=== 位姿数据格式转换工具 ===")
     print(f"输入文件: {input_csv_path}")
     print(f"输出文件: {output_json_path}")

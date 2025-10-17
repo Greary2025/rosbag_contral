@@ -61,7 +61,7 @@ def main():
     """
     # 配置参数
     input_dirs = [
-        "/mnt/d/rosbag/hba/synchronous/pcd",  # PCD文件目录
+        "/mnt/d/rosbag/big_exam/synchronous_1014_xianfeng/pcd",  # PCD文件目录
         # 如果需要处理更多目录，可以在这里添加
     ]
     

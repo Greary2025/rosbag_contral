@@ -322,6 +322,12 @@ def process_rosbag_data(bag_file, pcd_output_dir, pose_output_path, pcd_topic_na
                         pcd_file.write("TYPE F F F\n")
                         pcd_file.write("COUNT 1 1 1\n")
                     
+                    # 在终端提示该帧点云是否包含强度信息
+                    if has_intensity:
+                        print(f"第{pcd_frame_count}帧: 点云包含强度信息（intensity）")
+                    else:
+                        print(f"第{pcd_frame_count}帧: 点云不包含强度信息")
+
                     pcd_file.write(f"WIDTH {len(valid_points)}\n")
                     pcd_file.write("HEIGHT 1\n")
                     pcd_file.write("VIEWPOINT 0 0 0 1 0 0 0\n")
@@ -347,12 +353,12 @@ def process_rosbag_data(bag_file, pcd_output_dir, pose_output_path, pcd_topic_na
                 
                 # 写入对应的里程计数据到CSV
                 if closest_pose:
-                    f.write(f"{pcd_frame_count},{closest_pose['timestamp']:.9f},{closest_pose['pos_x']:.9f},{closest_pose['pos_y']:.9f},{(-closest_pose['pos_z']):.9f},{closest_pose['quat_x']:.9f},{closest_pose['quat_y']:.9f},{closest_pose['quat_z']:.9f},{closest_pose['quat_w']:.9f}\n")
+                    f.write(f"{pcd_frame_count},{closest_pose['timestamp']:.9f},{closest_pose['pos_x']:.9f},{closest_pose['pos_y']:.9f},{closest_pose['pos_z']:.9f},{closest_pose['quat_x']:.9f},{closest_pose['quat_y']:.9f},{closest_pose['quat_z']:.9f},{closest_pose['quat_w']:.9f}\n")
                     pose_frame_count += 1
                     
                     # 打印调试信息
                     if pcd_frame_count % 100 == 0:
-                        print(f"保存第{pcd_frame_count}帧: {pcd_filename} ({len(valid_points)}个点), 匹配时间戳={closest_pose['timestamp']:.3f}, 位置=({closest_pose['pos_x']:.3f}, {closest_pose['pos_y']:.3f}, {-closest_pose['pos_z']:.3f})")
+                        print(f"保存第{pcd_frame_count}帧: {pcd_filename} ({len(valid_points)}个点), 匹配时间戳={closest_pose['timestamp']:.3f}, 位置=({closest_pose['pos_x']:.3f}, {closest_pose['pos_y']:.3f}, {closest_pose['pos_z']:.3f})")
                 else:
                     print(f"警告：无法为第{pcd_frame_count}帧点云找到对应的里程计数据")
                 
@@ -457,22 +463,17 @@ def main():
             bag_file: 可选，ROS bag文件路径，默认为当前目录下的dynamic_synchronous.bag
             output_dir: 可选，输出目录路径，默认为/mnt/d/rosbag/dynamic/synchronous
     """
-    # 配置参数(固定路径)
-    bag_files = {
-        "/mnt/d/rosbag/hba/double_0722.bag": "/mnt/d/rosbag/hba/0722_xianfeng",
-        # 如果需要处理更多bag文件，可以在这里添加，格式为：
-        # "bag文件路径": "对应的输出目录路径",
-    }
-    
-    # 使用第一个配置作为默认值
-    bag_file, base_output_dir = next(iter(bag_files.items()))
+    # 直接指定 bag 文件与输出目录（无需通过字典与 next 获取）
+    bag_file = "/mnt/d/rosbag/big_exam/synchronous_1014.bag"
+    base_output_dir = "/mnt/d/rosbag/big_exam/synchronous_1014_gensui"
+    # 如需批量处理多个 bag，可改为列表/字典并使用 for 循环逐个处理。
     
     # 点云数据参数
-    pcd_topic_name = "/xianfeng/lidar"  # 要提取的点云话题
+    pcd_topic_name = "/gensui/lidar"  # 要提取的点云话题
     pcd_output_dir = os.path.join(base_output_dir, "pcds")  # PCD文件输出目录
     
     # 里程计数据参数
-    pose_topic_name = "/xianfeng/pose"  # 要提取的里程计话题
+    pose_topic_name = "/gensui/pose"  # 要提取的里程计话题
     pose_output_dir = base_output_dir  # 位姿数据输出目录
     pose_output_file = os.path.join(pose_output_dir, "poses_lidar2body_origin.csv")  # 位姿数据输出文件
     
