@@ -18,19 +18,19 @@
 ### 方法1：使用默认文件
 ```bash
 cd /home/john/rosbag_evo/src/rosbag_contral
-python3 scripts/transform_poses.py
+python3 scripts/convert/transform_poses.py
 ```
 这将自动处理 `config/poses_lidar2body.csv` 文件并覆盖原文件。
 
 ### 方法2：指定输入文件
 ```bash
-python3 scripts/transform_poses.py path/to/your/poses.csv
+python3 scripts/convert/transform_poses.py path/to/your/poses.csv
 ```
 这将处理指定的CSV文件并覆盖原文件。
 
 ### 方法3：指定输入和输出文件
 ```bash
-python3 scripts/transform_poses.py input.csv -o output.csv
+python3 scripts/convert/transform_poses.py input.csv -o output.csv
 ```
 这将处理 `input.csv` 文件并将结果保存到 `output.csv`。
 

@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  rosbag
+  sensor_msgs
+  tf2_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES rosbag_contral
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  CATKIN_DEPENDS roscpp rospy std_msgs rosbag sensor_msgs tf2_msgs
 #  DEPENDS system_lib
 )
 
@@ -118,6 +121,14 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+)
+
+add_executable(filter_teaching2_dual_lidar_imu
+  src/filter_teaching2_dual_lidar_imu.cpp
+)
+
+target_link_libraries(filter_teaching2_dual_lidar_imu
+  ${catkin_LIBRARIES}
 )
 
 ## Declare a C++ library
@@ -160,9 +171,9 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/add_ring.py
-  scripts/bag_to_pcd.py
-  scripts/gt_tum.py
+  scripts/rosbag/add_ring.py
+  scripts/rosbag/bag_to_pcd.py
+  scripts/rosbag/pose_to_tum.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

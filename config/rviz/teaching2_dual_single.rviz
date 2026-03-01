@@ -1,0 +1,90 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Time
+    Name: Time
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Plane Cell Count: 40
+      Cell Size: 1
+      Color: 160; 160; 164
+      Alpha: 0.5
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Marker Scale: 0.5
+      Value: true
+    - Class: rviz/PointCloud2
+      Enabled: true
+      Name: XianfengLidar
+      Topic: /xianfeng/lidar
+      Queue Size: 10
+      Size (Pixels): 2
+      Style: Flat Squares
+      Color Transformer: Intensity
+      Use rainbow: true
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/PointCloud2
+      Enabled: true
+      Name: GensuiLidar
+      Topic: /gensui/lidar
+      Queue Size: 10
+      Size (Pixels): 2
+      Style: Flat Squares
+      Color Transformer: FlatColor
+      Color: 0; 255; 255
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Name: XianfengImage
+      Image Topic: /xianfeng/camera/color/image_raw
+      Transport Hint: raw
+      Queue Size: 2
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Name: GensuiImage
+      Image Topic: /gensui/camera/color/image_raw
+      Transport Hint: raw
+      Queue Size: 2
+      Value: true
+  Enabled: true
+  Global Options:
+    Fixed Frame: xianfeng/velodyne
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 18
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Pitch: 0.75
+      Yaw: 1.2
+      Target Frame: xianfeng/velodyne
+Window Geometry:
+  Height: 920
+  Width: 1480

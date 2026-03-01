@@ -9,8 +9,7 @@ import numpy as np
 import os
 import sys
 import shutil
-import math
-import struct
+from pcd_utils import extract_valid_points, write_pcd_ascii
 import random
 from datetime import datetime
 
@@ -58,86 +57,19 @@ def convert_rosbag_to_pcd(bag_file, output_dir, topic_name):
             pcd_filename = f"{frame_count:06d}.pcd"
             pcd_path = os.path.join(output_dir, pcd_filename)
             
-            # 使用更底层的方法读取点云数据
             try:
-                # 检查字段信息
-                field_names = [field.name for field in msg.fields]
-                has_intensity = 'intensity' in field_names
-                
-                # 获取点云数据的基本信息
-                width = msg.width
-                height = msg.height
-                point_step = msg.point_step
-                row_step = msg.row_step
-                data = msg.data
-                
-                # print(f"第{frame_count}帧: {width}x{height} 点, point_step={point_step}, data_size={len(data)}")
-                
-                # 解析点云数据
-                valid_points = []
-                
-                # 简单的数据解析，假设标准的PointXYZI格式
-                for i in range(0, len(data), point_step):
-                    if i + 16 <= len(data):  # 确保有足够的数据读取x,y,z,intensity
-                        try:
-                            # 读取x, y, z (每个4字节float)
-                            x = struct.unpack('<f', data[i:i+4])[0]
-                            y = struct.unpack('<f', data[i+4:i+8])[0]
-                            z = struct.unpack('<f', data[i+8:i+12])[0]
-                            
-                            # 尝试读取intensity
-                            if has_intensity and i + 16 <= len(data):
-                                intensity = struct.unpack('<f', data[i+12:i+16])[0]
-                            else:
-                                intensity = 0.0
-                            
-                            # 检查是否为有效点
-                            if (not math.isnan(x) and not math.isnan(y) and not math.isnan(z) and
-                                abs(x) < 1000 and abs(y) < 1000 and abs(z) < 1000):
-                                valid_points.append((x, y, z, intensity))
-                                
-                        except struct.error:
-                            continue
-                
+                valid_points, has_intensity = extract_valid_points(msg)
             except Exception as e:
                 print(f"警告：无法读取第{frame_count}帧点云数据: {e}")
                 frame_count += 1
                 continue
-            
+
             if len(valid_points) == 0:
                 print(f"警告：第{frame_count}帧点云数据为空，跳过")
                 frame_count += 1
                 continue
-            
-            # 写入PCD文件
-            with open(pcd_path, 'w') as f:
-                # 写入PCD文件头
-                f.write("# .PCD v0.7 - Point Cloud Data file format\n")
-                f.write("VERSION 0.7\n")
-                
-                if has_intensity:
-                    f.write("FIELDS x y z intensity\n")
-                    f.write("SIZE 4 4 4 4\n")
-                    f.write("TYPE F F F F\n")
-                    f.write("COUNT 1 1 1 1\n")
-                else:
-                    f.write("FIELDS x y z\n")
-                    f.write("SIZE 4 4 4\n")
-                    f.write("TYPE F F F\n")
-                    f.write("COUNT 1 1 1\n")
-                
-                f.write(f"WIDTH {len(valid_points)}\n")
-                f.write("HEIGHT 1\n")
-                f.write("VIEWPOINT 0 0 0 1 0 0 0\n")
-                f.write(f"POINTS {len(valid_points)}\n")
-                f.write("DATA ascii\n")
-                
-                # 写入点云数据
-                for point in valid_points:
-                    if has_intensity:
-                        f.write(f"{point[0]:.6f} {point[1]:.6f} {point[2]:.6f} {point[3]:.6f}\n")
-                    else:
-                        f.write(f"{point[0]:.6f} {point[1]:.6f} {point[2]:.6f}\n")
+
+            write_pcd_ascii(pcd_path, valid_points, has_intensity)
             
             print(f"保存第{frame_count}帧: {pcd_filename} ({len(valid_points)}个点)")
             frame_count += 1
@@ -254,92 +186,24 @@ def process_rosbag_data(bag_file, pcd_output_dir, pose_output_path, pcd_topic_na
                 # 获取点云时间戳
                 pcd_timestamp = t.to_sec()
                 
-                # 使用更底层的方法读取点云数据
                 try:
-                    # 检查字段信息
-                    field_names = [field.name for field in msg.fields]
-                    has_intensity = 'intensity' in field_names
-                    
-                    # 获取点云数据的基本信息
-                    width = msg.width
-                    height = msg.height
-                    point_step = msg.point_step
-                    row_step = msg.row_step
-                    data = msg.data
-                    
-                    print(f"第{pcd_frame_count}帧: {width}x{height} 点, point_step={point_step}, data_size={len(data)}")
-                    
-                    # 解析点云数据
-                    valid_points = []
-                    
-                    # 简单的数据解析，假设标准的PointXYZI格式
-                    for i in range(0, len(data), point_step):
-                        if i + 16 <= len(data):  # 确保有足够的数据读取x,y,z,intensity
-                            try:
-                                # 读取x, y, z (每个4字节float)
-                                x = struct.unpack('<f', data[i:i+4])[0]
-                                y = struct.unpack('<f', data[i+4:i+8])[0]
-                                z = struct.unpack('<f', data[i+8:i+12])[0]
-                                
-                                # 尝试读取intensity
-                                if has_intensity and i + 16 <= len(data):
-                                    intensity = struct.unpack('<f', data[i+12:i+16])[0]
-                                else:
-                                    intensity = 0.0
-                                
-                                # 检查是否为有效点
-                                if (not math.isnan(x) and not math.isnan(y) and not math.isnan(z) and
-                                    abs(x) < 1000 and abs(y) < 1000 and abs(z) < 1000):
-                                    valid_points.append((x, y, z, intensity))
-                                    
-                            except struct.error:
-                                continue
-                    
+                    valid_points, has_intensity = extract_valid_points(msg)
                 except Exception as e:
                     print(f"警告：无法读取第{pcd_frame_count}帧点云数据: {e}")
                     pcd_frame_count += 1
                     continue
-                
+
                 if len(valid_points) == 0:
                     print(f"警告：第{pcd_frame_count}帧点云数据为空，跳过")
                     pcd_frame_count += 1
                     continue
-                
-                # 写入PCD文件
-                with open(pcd_path, 'w') as pcd_file:
-                    # 写入PCD文件头
-                    pcd_file.write("# .PCD v0.7 - Point Cloud Data file format\n")
-                    pcd_file.write("VERSION 0.7\n")
-                    
-                    if has_intensity:
-                        pcd_file.write("FIELDS x y z intensity\n")
-                        pcd_file.write("SIZE 4 4 4 4\n")
-                        pcd_file.write("TYPE F F F F\n")
-                        pcd_file.write("COUNT 1 1 1 1\n")
-                    else:
-                        pcd_file.write("FIELDS x y z\n")
-                        pcd_file.write("SIZE 4 4 4\n")
-                        pcd_file.write("TYPE F F F\n")
-                        pcd_file.write("COUNT 1 1 1\n")
-                    
-                    # 在终端提示该帧点云是否包含强度信息
-                    if has_intensity:
-                        print(f"第{pcd_frame_count}帧: 点云包含强度信息（intensity）")
-                    else:
-                        print(f"第{pcd_frame_count}帧: 点云不包含强度信息")
 
-                    pcd_file.write(f"WIDTH {len(valid_points)}\n")
-                    pcd_file.write("HEIGHT 1\n")
-                    pcd_file.write("VIEWPOINT 0 0 0 1 0 0 0\n")
-                    pcd_file.write(f"POINTS {len(valid_points)}\n")
-                    pcd_file.write("DATA ascii\n")
-                    
-                    # 写入点云数据
-                    for point in valid_points:
-                        if has_intensity:
-                            pcd_file.write(f"{point[0]:.6f} {point[1]:.6f} {point[2]:.6f} {point[3]:.6f}\n")
-                        else:
-                            pcd_file.write(f"{point[0]:.6f} {point[1]:.6f} {point[2]:.6f}\n")
+                if has_intensity:
+                    print(f"第{pcd_frame_count}帧: 点云包含强度信息（intensity）")
+                else:
+                    print(f"第{pcd_frame_count}帧: 点云不包含强度信息")
+
+                write_pcd_ascii(pcd_path, valid_points, has_intensity)
                 
                 # 查找最接近的里程计数据
                 closest_pose = None
